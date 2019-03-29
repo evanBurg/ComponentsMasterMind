@@ -1,0 +1,11 @@
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\CardsLibrary\bin\Debug\CardsLibrary.dll
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\CardsLibrary\bin\Debug\CardsLibrary.pdb
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\CardsLibrary\obj\Debug\MasterMindLibrary.csproj.CoreCompileInputs.cache
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\CardsLibrary\obj\Debug\CardsLibrary.dll
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\CardsLibrary\obj\Debug\CardsLibrary.pdb
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\bin\Debug\CardsLibrary.dll
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\bin\Debug\CardsLibrary.pdb
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\obj\Debug\MasterMindLibrary.csprojAssemblyReference.cache
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\obj\Debug\MasterMindLibrary.csproj.CoreCompileInputs.cache
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\obj\Debug\CardsLibrary.dll
+E:\College\Component Programming\WCF example #3 with Client Callbacks\Cards\MasterMindLibrary\obj\Debug\CardsLibrary.pdb
