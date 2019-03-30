@@ -3,6 +3,89 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Mastermind" Height="350" Width="525" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
+        <Ellipse
+            x:Name="first"
+            Width="50"
+            Height="50"
+            Fill="BlanchedAlmond" Stroke="Black"/>
+        <Ellipse
+            x:Name="second"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Width="50"
+            Height="50"
+            Fill="BlanchedAlmond" Stroke="Black"/>
+        <Ellipse
+            x:Name="third"
+            Grid.Column="3"
+            Grid.ColumnSpan="2"
+            Width="50"
+            Height="50"
+            Fill="BlanchedAlmond" Stroke="Black"/>
+        <Ellipse
+            x:Name="fourth"
+            Grid.Column="5"
+            Width="50"
+            Height="50"
+            Fill="BlanchedAlmond" Stroke="Black"/>
+
+        <Ellipse
+            Grid.Row="1"
+            Width="50"
+            Height="50"
+            Fill="Red" Stroke="Black" MouseLeftButtonUp="selectColour"/>
+        <Ellipse
+            Grid.Row="1"
+            Grid.Column="1"
+            Width="50"
+            Height="50"
+            MouseLeftButtonUp="selectColour"
+            Fill="Green" Stroke="Black"/>
+        <Ellipse
+            Grid.Row="1"
+            Grid.Column="2"
+            Width="50"
+            Height="50"
+            MouseLeftButtonUp="selectColour"
+            Fill="Blue" Stroke="Black"/>
+        <Ellipse
+            Grid.Row="1"
+            Grid.Column="3"
+            Width="50"
+            Height="50"
+            MouseLeftButtonUp="selectColour"
+            Fill="Yellow" Stroke="Black"/>
+        <Ellipse
+            Grid.Row="1"
+            Grid.Column="4"
+            Width="50"
+            Height="50"
+            MouseLeftButtonUp="selectColour"
+            Fill="Pink" Stroke="Black"/>
+        <Ellipse
+            Grid.Row="1"
+            Grid.Column="5"
+            Width="50"
+            Height="50"
+            MouseLeftButtonUp="selectColour"
+            Fill="Purple" Stroke="Black"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" x:Name="Results" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Click="testSequence">Submit</Button>
     </Grid>
 </Window>

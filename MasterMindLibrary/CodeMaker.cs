@@ -12,8 +12,8 @@ namespace MasterMindLibrary
         [OperationContract(IsOneWay = true)] void UpdateGui(CallbackInfo info);
     }
 
-    public enum Colors { Red = 0, Green, Blue, Yellow, Purple, Orange }
-    
+    public enum Colors { Red = 0, Green, Blue, Yellow, Pink, Purple }
+
     [ServiceContract(CallbackContract = typeof(ICallback))]
     public interface ICodeMaker
     {
@@ -21,7 +21,7 @@ namespace MasterMindLibrary
         List<Colors> correctSequence { [OperationContract] get; [OperationContract] set; }
         [OperationContract] bool ToggleCallbacks();
     }
-    
+
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class CodeMaker : ICodeMaker
     {
@@ -33,12 +33,18 @@ namespace MasterMindLibrary
             callbacks = new HashSet<ICallback>();
             Random rng = new Random();
             correctSequence = new List<Colors>();
-            for(int i = 0; i < NUM_COLORS; i++)
+            for (int i = 0; i < NUM_COLORS; i++)
             {
-                correctSequence.Add((Colors)rng.Next(0, (int)Colors.Orange));
+                correctSequence.Add((Colors)rng.Next(0, (int)Colors.Purple));
+            }
+
+            Console.WriteLine("Sequence is...");
+            foreach (Colors color in correctSequence)
+            {
+                Console.WriteLine(color.ToString());
             }
         }
-        
+
         public bool IsCorrect(List<Colors> guess)
         {
             var firstNotSecond = correctSequence.Except(guess).ToList();
