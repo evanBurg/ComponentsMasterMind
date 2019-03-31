@@ -9,7 +9,7 @@ namespace MasterMindLibrary
 {
     public interface ICallback
     {
-        [OperationContract(IsOneWay = true)] void UpdateGui(CallbackInfo info);
+        [OperationContract(IsOneWay = true)] void SomeoneWon(CallbackInfo info);
     }
 
     public enum Colors { Red = 0, Green, Blue, Yellow, Pink, Purple }
@@ -17,7 +17,7 @@ namespace MasterMindLibrary
     [ServiceContract(CallbackContract = typeof(ICallback))]
     public interface ICodeMaker
     {
-        [OperationContract] bool IsCorrect(List<Colors> guess);
+        [OperationContract] bool IsCorrect(List<Colors> guess, string name);
         List<Colors> correctSequence { [OperationContract] get; [OperationContract] set; }
         [OperationContract] bool ToggleCallbacks();
     }
@@ -45,11 +45,16 @@ namespace MasterMindLibrary
             }
         }
 
-        public bool IsCorrect(List<Colors> guess)
+        public bool IsCorrect(List<Colors> guess, string name)
         {
             var firstNotSecond = correctSequence.Except(guess).ToList();
             var secondNotFirst = guess.Except(correctSequence).ToList();
-            return !firstNotSecond.Any() && !secondNotFirst.Any();
+            bool correct = !firstNotSecond.Any() && !secondNotFirst.Any();
+            if (correct)
+            {
+                updateAllClients(name);
+            }
+            return correct;
         }
 
         public bool ToggleCallbacks()
@@ -68,12 +73,12 @@ namespace MasterMindLibrary
             }
         }
 
-        private void updateAllClients(bool emptyHand)
+        private void updateAllClients(string name)
         {
-            CallbackInfo info = new CallbackInfo(correctSequence);
+            CallbackInfo info = new CallbackInfo(correctSequence, name);
 
             foreach (ICallback cb in callbacks)
-                cb.UpdateGui(info);
+                cb.SomeoneWon(info);
         }
     }
 }

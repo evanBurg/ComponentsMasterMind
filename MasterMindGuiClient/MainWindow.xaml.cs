@@ -55,18 +55,12 @@ namespace MasterMindGUI
 
         private delegate void ClientUpdateDelegate(CallbackInfo info);
 
-        public void UpdateGui(CallbackInfo info)
+        public void SomeoneWon(CallbackInfo info)
         {
-            if (System.Threading.Thread.CurrentThread == this.Dispatcher.Thread)
-            {
-                // Update the GUI
 
-            }
-            else
-            {
-                // Only the main (dispatcher) thread can change the GUI
-                this.Dispatcher.BeginInvoke(new ClientUpdateDelegate(UpdateGui), info);
-            }
+            MessageBox.Show("A user won: " + info.name);
+            GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
+            window.ShowDialog();
         }
 
         private void changeColour(SolidColorBrush colour, int index)
@@ -141,19 +135,29 @@ namespace MasterMindGUI
 
         private void testSequence(object sender, RoutedEventArgs e)
         {
-            bool correct = codeMaker.IsCorrect(selected);
-            if (!correct)
+            if (guesses.Count + 1 <= 8)
             {
-                guesses.Add(selected);
-                Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses.Count);
-                selected = new List<MasterMindLibrary.Colors>();
-                updateColours();
-            }
-            else
-            {
-                GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
-                window.ShowDialog();
-                Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses.Count);
+                //"Kev" string should take the user's name instead of it being this hardcoded string.
+                bool correct = codeMaker.IsCorrect(selected, "Kev");
+                if (!correct)
+                {
+                    guesses.Add(selected);
+                    Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses.Count);
+                    selected = new List<MasterMindLibrary.Colors>();
+                    updateColours();
+                    if (guesses.Count == 8)
+                    {
+                        GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
+                        window.ShowDialog();
+                    }
+                }
+                else
+                {
+                    guesses.Add(selected);
+                    GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
+                    window.ShowDialog();
+                    Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses.Count);
+                }
             }
         }
     }

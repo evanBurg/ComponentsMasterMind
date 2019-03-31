@@ -34,6 +34,8 @@ namespace MasterMindGuiClient
                     ellipse.Height = 50;
                     ellipse.Width = 50;
                     ellipse.Fill = solidColors[guess[i]];
+                    ellipse.Stroke = new SolidColorBrush(Colors.Black);
+                    ellipse.Margin = new Thickness(5);
                     Grid.SetColumn(ellipse, i);
                     grid.Children.Add(ellipse);
                 }
