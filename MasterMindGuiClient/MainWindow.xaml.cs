@@ -8,6 +8,7 @@ using System.ServiceModel;
 using MasterMindLibrary;
 using System.Windows.Shapes;
 using System.Windows.Media;
+using MasterMindGuiClient;
 
 namespace MasterMindGUI
 {
@@ -17,9 +18,10 @@ namespace MasterMindGUI
         // Member variables
         private ICodeMaker codeMaker = null;
         private List<MasterMindLibrary.Colors> selected;
-        private List<SolidColorBrush> solidColors;
+        private Dictionary<MasterMindLibrary.Colors, SolidColorBrush> solidColors;
         private bool callbacksEnabled = false;
-        private int guesses = 0;
+        private List<List<MasterMindLibrary.Colors>> guesses;
+        const int MAX_GUESSES = 8;
 
         public MainWindow()
         {
@@ -35,17 +37,15 @@ namespace MasterMindGUI
                 callbacksEnabled = codeMaker.ToggleCallbacks();
 
                 selected = new List<MasterMindLibrary.Colors>();
-                solidColors = new List<SolidColorBrush>();
-                for (int i = 0; i <= (int)MasterMindLibrary.Colors.Purple; i++)
-                {
-                    solidColors.Add(new SolidColorBrush());
-                }
-                solidColors[0].Color = System.Windows.Media.Colors.Red;
-                solidColors[1].Color = System.Windows.Media.Colors.Green;
-                solidColors[2].Color = System.Windows.Media.Colors.Blue;
-                solidColors[3].Color = System.Windows.Media.Colors.Yellow;
-                solidColors[4].Color = System.Windows.Media.Colors.Pink;
-                solidColors[5].Color = System.Windows.Media.Colors.Purple;
+                solidColors = new Dictionary<MasterMindLibrary.Colors, SolidColorBrush>();
+                guesses = new List<List<MasterMindLibrary.Colors>>();
+
+                solidColors.Add(MasterMindLibrary.Colors.Red, new SolidColorBrush(System.Windows.Media.Colors.Red));
+                solidColors.Add(MasterMindLibrary.Colors.Green, new SolidColorBrush(System.Windows.Media.Colors.Green));
+                solidColors.Add(MasterMindLibrary.Colors.Blue, new SolidColorBrush(System.Windows.Media.Colors.Blue));
+                solidColors.Add(MasterMindLibrary.Colors.Yellow, new SolidColorBrush(System.Windows.Media.Colors.Yellow));
+                solidColors.Add(MasterMindLibrary.Colors.Pink, new SolidColorBrush(System.Windows.Media.Colors.Pink));
+                solidColors.Add(MasterMindLibrary.Colors.Purple, new SolidColorBrush(System.Windows.Media.Colors.Purple));
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace MasterMindGUI
             {
                 if (selected.Count > i)
                 {
-                    changeColour(solidColors[(int)selected[i]], i);
+                    changeColour(solidColors[selected[i]], i);
                 }
                 else
                 {
@@ -111,27 +111,27 @@ namespace MasterMindGUI
             Ellipse circle = sender as Ellipse;
             if (selected.Count < 4)
             {
-                if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Red].ToString())
+                if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Red].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Red);
                 }
-                else if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Green].ToString())
+                else if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Green].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Green);
                 }
-                else if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Blue].ToString())
+                else if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Blue].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Blue);
                 }
-                else if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Yellow].ToString())
+                else if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Yellow].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Yellow);
                 }
-                else if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Pink].ToString())
+                else if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Pink].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Pink);
                 }
-                else if (circle.Fill.ToString() == solidColors[(int)MasterMindLibrary.Colors.Purple].ToString())
+                else if (circle.Fill.ToString() == solidColors[MasterMindLibrary.Colors.Purple].ToString())
                 {
                     selected.Add(MasterMindLibrary.Colors.Purple);
                 }
@@ -141,17 +141,19 @@ namespace MasterMindGUI
 
         private void testSequence(object sender, RoutedEventArgs e)
         {
-            bool correct = codeMaker.IsCorrect(this.selected);
+            bool correct = codeMaker.IsCorrect(selected);
             if (!correct)
             {
-                guesses += 1;
-                Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses);
+                guesses.Add(selected);
+                Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses.Count);
                 selected = new List<MasterMindLibrary.Colors>();
                 updateColours();
             }
             else
             {
-                Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses);
+                GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
+                window.ShowDialog();
+                Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses.Count);
             }
         }
     }
