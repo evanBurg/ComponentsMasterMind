@@ -173,13 +173,14 @@ namespace MasterMindGUI
         {
             if (guesses.Count + 1 <= 8 && selected.Count == 4)
             {
-                bool? correct = codeMaker.IsCorrect(selected, name);
-                if (correct == false)
+                Tuple<bool?, string> results = codeMaker.IsCorrect(selected, name);
+                if (results.Item1 == false)
                 {
                     guesses.Add(selected);
                     Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses.Count);
                     selected = new List<MasterMindLibrary.Colors>();
                     this.submit.IsEnabled = false;
+                    MessageBox.Show(results.Item2);
                     updateColours();
                     if (guesses.Count == 8)
                     {
@@ -187,7 +188,7 @@ namespace MasterMindGUI
                         window.ShowDialog();
                     }
                 }
-                else if (correct == true)
+                else if (results.Item1 == true)
                 {
                     guesses.Add(selected);
                     Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses.Count);

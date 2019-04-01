@@ -17,7 +17,7 @@ namespace MasterMindLibrary
     [ServiceContract(CallbackContract = typeof(ICallback))]
     public interface ICodeMaker
     {
-        [OperationContract] bool? IsCorrect(List<Colors> guess, string name);
+        [OperationContract] Tuple<bool?, string> IsCorrect(List<Colors> guess, string name);
         List<Colors> correctSequence { [OperationContract] get; [OperationContract] set; }
         [OperationContract] bool ToggleCallbacks();
         [OperationContract] string HasSomeoneWon();
@@ -52,8 +52,9 @@ namespace MasterMindLibrary
             return someoneWon;
         }
 
-        public bool? IsCorrect(List<Colors> guess, string name)
+        public Tuple<bool?, string> IsCorrect(List<Colors> guess, string name)
         {
+            Tuple<bool?, string> returnValues;
             try
             {
                 if (someoneWon == "")
@@ -66,20 +67,20 @@ namespace MasterMindLibrary
                         if(guess[i] != correctSequence[i])
                         {
                             correct = false;
-                        }
-                        else
-                        {
                             if (correctSequence.Contains(guess[i]))
                             {
                                 help += String.Format("The sequence contains {0} but it is in the incorrect positon\n", guess[i]);
                             }
                             else
                             {
-                                help += String.Format("The sequence contains {0} and it is in the correct positon\n", guess[i]);
+                                help += String.Format("The sequence does not contain {0}\n", guess[i]);
                             }
                         }
+                        else
+                        {
+                            help += String.Format("The sequence contains {0} and it is in the correct positon\n", guess[i]);
+                        }
                     }
-
                     
 
                     if (correct)
@@ -87,7 +88,8 @@ namespace MasterMindLibrary
                         someoneWon = name;
                         updateAllClients(name);
                     }
-                    return correct;
+                    returnValues = new Tuple<bool?, string>(correct, help);
+                    return returnValues;
                 }
                 else
                 {
