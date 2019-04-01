@@ -1,6 +1,7 @@
 ﻿<Window x:Class="MasterMindGUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="window"
         Title="Mastermind" Height="350" Width="525" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
@@ -86,6 +87,6 @@
             Fill="Purple" Stroke="Black"/>
 
         <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" x:Name="Results" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
-        <Button Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Click="testSequence">Submit</Button>
+        <Button x:Name="submit" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Click="testSequence">Submit</Button>
     </Grid>
 </Window>

@@ -5,6 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MasterMindGuiClient"
         mc:Ignorable="d"
-        Title="GuessesWindow" Height="520" Width="275">
+        Title="MasterMind | Guesses" Height="520" Width="275">
     <StackPanel x:Name="container"/>
 </Window>

@@ -12,11 +12,13 @@ namespace MasterMindLibrary
     {
         [DataMember] public List<Colors> correctSequence { get; private set; }
         [DataMember] public string name { get; private set; }
+        [DataMember] public bool someoneWon { get; private set; }
 
-        public CallbackInfo(List<Colors> c, string n)
+        public CallbackInfo(List<Colors> c, string n, bool s = false)
         {
             correctSequence = c;
             name = n;
+            someoneWon = s;
         }
     }
 }
