@@ -24,6 +24,7 @@ namespace MasterMindGUI
         const int MAX_GUESSES = 8;
         string name;
         private bool finished = false;
+        private bool connected = false;
 
         public MainWindow(string ip, string name)
         {
@@ -34,25 +35,44 @@ namespace MasterMindGUI
                 this.window.Title += " | " + name;
                 this.name = name;
                 // Connect to the WCF service endpoint called "ShoeService" 
+
                 DuplexChannelFactory<ICodeMaker> channel = new DuplexChannelFactory<ICodeMaker>(this, new NetTcpBinding(), new EndpointAddress("net.tcp://" + ip + ":13200/MasterMindLibrary/MasterService"));
                 codeMaker = channel.CreateChannel();
                 this.submit.IsEnabled = false;
 
-                HasSomeoneWon();
+                try
+                {
+                    HasSomeoneWon();
+                    // Subscribe to the callbacks
+                    callbacksEnabled = codeMaker.ToggleCallbacks();
+                    connected = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(String.Format("There was an issue connecting to '{0}'. Please check the entered address as well as your network status and try again", ip));
+                    App.Current.joinWindow = new JoinWindow();
+                    App.Current.joinWindow.Show();
+                }
 
-                // Subscribe to the callbacks
-                callbacksEnabled = codeMaker.ToggleCallbacks();
+                if (connected)
+                {
+                    selected = new List<MasterMindLibrary.Colors>();
+                    solidColors = new Dictionary<MasterMindLibrary.Colors, SolidColorBrush>();
+                    guesses = new List<List<MasterMindLibrary.Colors>>();
 
-                selected = new List<MasterMindLibrary.Colors>();
-                solidColors = new Dictionary<MasterMindLibrary.Colors, SolidColorBrush>();
-                guesses = new List<List<MasterMindLibrary.Colors>>();
+                    solidColors.Add(MasterMindLibrary.Colors.Red, new SolidColorBrush(System.Windows.Media.Colors.Red));
+                    solidColors.Add(MasterMindLibrary.Colors.Green, new SolidColorBrush(System.Windows.Media.Colors.Green));
+                    solidColors.Add(MasterMindLibrary.Colors.Blue, new SolidColorBrush(System.Windows.Media.Colors.Blue));
+                    solidColors.Add(MasterMindLibrary.Colors.Yellow, new SolidColorBrush(System.Windows.Media.Colors.Yellow));
+                    solidColors.Add(MasterMindLibrary.Colors.Pink, new SolidColorBrush(System.Windows.Media.Colors.Pink));
+                    solidColors.Add(MasterMindLibrary.Colors.Purple, new SolidColorBrush(System.Windows.Media.Colors.Purple));
 
-                solidColors.Add(MasterMindLibrary.Colors.Red, new SolidColorBrush(System.Windows.Media.Colors.Red));
-                solidColors.Add(MasterMindLibrary.Colors.Green, new SolidColorBrush(System.Windows.Media.Colors.Green));
-                solidColors.Add(MasterMindLibrary.Colors.Blue, new SolidColorBrush(System.Windows.Media.Colors.Blue));
-                solidColors.Add(MasterMindLibrary.Colors.Yellow, new SolidColorBrush(System.Windows.Media.Colors.Yellow));
-                solidColors.Add(MasterMindLibrary.Colors.Pink, new SolidColorBrush(System.Windows.Media.Colors.Pink));
-                solidColors.Add(MasterMindLibrary.Colors.Purple, new SolidColorBrush(System.Windows.Media.Colors.Purple));
+                    this.Show();
+                }
+                else
+                {
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
