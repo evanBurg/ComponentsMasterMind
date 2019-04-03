@@ -36,7 +36,11 @@ namespace MasterMindGUI
                 this.name = name;
                 // Connect to the WCF service endpoint called "ShoeService" 
 
-                DuplexChannelFactory<ICodeMaker> channel = new DuplexChannelFactory<ICodeMaker>(this, new NetTcpBinding(), new EndpointAddress("net.tcp://" + ip + ":13200/MasterMindLibrary/MasterService"));
+                var netTcp = new NetTcpBinding();
+                netTcp.Security = new NetTcpSecurity();
+                netTcp.Security.Mode = SecurityMode.None;
+
+                DuplexChannelFactory<ICodeMaker> channel = new DuplexChannelFactory<ICodeMaker>(this, netTcp, new EndpointAddress("net.tcp://" + ip + ":13200/MasterMindLibrary/MasterService"));
                 codeMaker = channel.CreateChannel();
                 this.submit.IsEnabled = false;
 
