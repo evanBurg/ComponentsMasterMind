@@ -40,6 +40,8 @@ namespace MasterMindGUI
                 codeMaker = channel.CreateChannel();
                 this.submit.IsEnabled = false;
 
+               
+
                 try
                 {
                     HasSomeoneWon();
