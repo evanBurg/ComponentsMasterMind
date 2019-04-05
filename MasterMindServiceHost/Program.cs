@@ -30,7 +30,6 @@ namespace CardsServiceHost
             return new WebClient().DownloadString("http://icanhazip.com");
         }
 
-
         static void Main(string[] args)
         {
             ServiceHost servHost = null;
@@ -42,7 +41,7 @@ namespace CardsServiceHost
                 // Run the service
                 servHost.Open();
                 Console.WriteLine("Local IP: {0} | External IP: {1}", GetLocalIPAddress(), GetExternalIPAddress());
-                Console.WriteLine("Service started. Press any key to quit.");
+                Console.WriteLine("Service started. Press any key to quit.\n");
             }
             catch (Exception ex)
             {

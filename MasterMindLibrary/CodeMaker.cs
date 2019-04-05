@@ -48,8 +48,9 @@ namespace MasterMindLibrary
             Console.WriteLine("Sequence is...");
             foreach (Colors color in correctSequence)
             {
-                Console.WriteLine(color.ToString());
+                Console.Write(color.ToString() + " ");
             }
+            Console.Write("\n");
         }
 
         public string HasSomeoneWon(string name)
@@ -60,6 +61,7 @@ namespace MasterMindLibrary
             }
             else
             {
+                Console.WriteLine("User '{0}' joined.", name);
                 playerNames.Add(name, 0);
                 updatePlayerList();
                 return someoneWon;
@@ -101,6 +103,9 @@ namespace MasterMindLibrary
                     if (correct)
                     {
                         someoneWon = name;
+                        Console.WriteLine("\n--------------WINNER--------------");
+                        Console.WriteLine("User '{0}' won with {1} guesses", name, playerNames[name] + 1);
+                        Console.WriteLine("--------------WINNER--------------");
                         updateAllClients(name);
                     }
                     this.playerNames[name] += 1;

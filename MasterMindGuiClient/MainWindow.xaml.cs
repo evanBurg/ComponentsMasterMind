@@ -36,7 +36,7 @@ namespace MasterMindGUI
                 this.window.Title += " | " + name;
                 this.name = name;
                 // Connect to the WCF service endpoint called "ShoeService" 
-
+                this.backspace.IsEnabled = false;
                 var netTcp = new NetTcpBinding();
                 netTcp.Security = new NetTcpSecurity();
                 netTcp.Security.Mode = SecurityMode.None;
@@ -54,6 +54,7 @@ namespace MasterMindGUI
                 catch (Exception)
                 {
                     MessageBox.Show(String.Format("There was an issue connecting to '{0}'. Please check the entered address as well as your network status and try again", ip));
+                    connected = false;
                 }
 
                 if (connected)
@@ -68,7 +69,7 @@ namespace MasterMindGUI
                     solidColors.Add(MasterMindLibrary.Colors.Yellow, new SolidColorBrush(System.Windows.Media.Colors.Yellow));
                     solidColors.Add(MasterMindLibrary.Colors.Pink, new SolidColorBrush(System.Windows.Media.Colors.Pink));
                     solidColors.Add(MasterMindLibrary.Colors.Purple, new SolidColorBrush(System.Windows.Media.Colors.Purple));
-
+                    App.Current.joinWindow.Close();
                     this.Show();
                 }
                 else
@@ -94,7 +95,6 @@ namespace MasterMindGUI
             }
             else if (name != "")
             {
-                finished = true;
                 codeMaker.IsCorrect(selected, name);
             }
         }
@@ -117,7 +117,8 @@ namespace MasterMindGUI
                         SolidColorBrush green = new SolidColorBrush(System.Windows.Media.Colors.Green);
                         winnerText.Foreground = green;
                         winnerText.Text = "WINNER!";
-
+                        this.backspace.IsEnabled = false;
+                        this.submit.IsEnabled = false;
                         this.finished = true;
                     }
                     else
@@ -126,14 +127,23 @@ namespace MasterMindGUI
                         SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
                         winnerText.Foreground = red;
                         winnerText.Text = "LOSER!";
-
+                        this.backspace.IsEnabled = false;
+                        this.submit.IsEnabled = false;
                         this.finished = true;
                     }
                 }
                 else
                 {
-                    this.window.Title += " | FINISHED";
-                    MessageBox.Show("A user has already won: " + info.name);
+                    if (!finished)
+                    {
+                        this.window.Title += " | FINISHED";
+                        MessageBox.Show("A user has already won: " + info.name);
+                        finished = true;
+                        this.backspace.IsEnabled = false;
+                        this.submit.IsEnabled = false;
+                        winnerCard.Visibility = Visibility.Visible;
+                        winnerText.Text = "FINISHED!";
+                    }
                 }
                 this.submit.IsEnabled = false;
             }
@@ -164,6 +174,11 @@ namespace MasterMindGUI
 
             if (selected.Count == 4)
                 this.submit.IsEnabled = true;
+
+            if (selected.Count >= 1)
+                this.backspace.IsEnabled = true;
+            else
+                this.backspace.IsEnabled = false;
         }
 
         private void updateColours()
@@ -260,7 +275,7 @@ namespace MasterMindGUI
                 }
                 else if (hints[i] == false)
                 {
-                    ellipse.Fill = new SolidColorBrush(System.Windows.Media.Colors.BlanchedAlmond);
+                    ellipse.Fill = new SolidColorBrush(Color.FromArgb(255, 244, 122, 143));
                 }
                 else if (hints[i] == null)
                 {
