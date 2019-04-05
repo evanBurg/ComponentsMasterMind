@@ -28,7 +28,7 @@ namespace MasterMindGuiClient
         private void join(object sender, RoutedEventArgs e)
         {
             App.Current.mainWindow = new MainWindow(this.ipTxt.Text, this.nameTxt.Text);
-            App.Current.joinWindow.Hide();
+            App.Current.joinWindow.Close();
         }
     }
 }

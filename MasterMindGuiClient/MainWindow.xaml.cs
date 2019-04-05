@@ -53,7 +53,7 @@ namespace MasterMindGUI
                     callbacksEnabled = codeMaker.ToggleCallbacks();
                     connected = true;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     MessageBox.Show(String.Format("There was an issue connecting to '{0}'. Please check the entered address as well as your network status and try again", ip));
                     App.Current.joinWindow = new JoinWindow();
@@ -106,11 +106,25 @@ namespace MasterMindGUI
                 {
                     // Update the GUI
                     MessageBox.Show("A user won: " + info.name);
-                    GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
-                    window.ShowDialog();
+                    this.window.Title += " | FINISHED";
+                    if(info.name == this.name)
+                    {
+                        winnerCard.Visibility = Visibility.Visible;
+                        SolidColorBrush green = new SolidColorBrush(System.Windows.Media.Colors.Green);
+                        winnerText.Foreground = green;
+                        winnerText.Text = "WINNER!";
+                    }
+                    else
+                    {
+                        winnerCard.Visibility = Visibility.Visible;
+                        SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
+                        winnerText.Foreground = red;
+                        winnerText.Text = "LOSER!";
+                    }
                 }
                 else
                 {
+                    this.window.Title += " | FINISHED"; 
                     MessageBox.Show("A user has already won: " + info.name);
                 }
                 this.submit.IsEnabled = false;
@@ -203,23 +217,31 @@ namespace MasterMindGUI
                 if (results.Item1 == false)
                 {
                     guesses.Add(selected);
-                    Results.Text = String.Format("That sequence is incorrect!\nYou've made {0} guesses.", guesses.Count);
+                    Results.Text = String.Format("That sequence is incorrect!\nYou've made {0}/8 guesses.", guesses.Count);
                     selected = new List<MasterMindLibrary.Colors>();
                     this.submit.IsEnabled = false;
                     MessageBox.Show(results.Item2);
                     updateColours();
                     if (guesses.Count == 8)
                     {
-                        GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
-                        window.ShowDialog();
+                        winnerCard.Visibility = Visibility.Visible;
+                        SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
+                        winnerText.Foreground = red;
+                        winnerText.Text = "LOSER!";
                     }
                 }
                 else if (results.Item1 == true)
                 {
                     guesses.Add(selected);
-                    Results.Text = String.Format("That sequence is correct!\nYou guessed {0} before finding the sequence.", guesses.Count);
+                    Results.Text = String.Format("That sequence is correct!\nYou guessed {0} time(s) before finding the sequence.", guesses.Count);
                 }
             }
+        }
+
+        private void viewGuesses(object sender, RoutedEventArgs e)
+        {
+            GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
+            window.ShowDialog();
         }
     }
 }

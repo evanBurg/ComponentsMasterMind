@@ -2,7 +2,15 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="window"
-        Title="Mastermind" Height="350" Width="525" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="Mastermind" Height="434.308" Width="525" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -19,74 +27,105 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Ellipse
+        <materialDesign:Card x:Name="winnerCard" Visibility="Hidden" Grid.ColumnSpan="6" Grid.RowSpan="4" Padding="10" Margin="10" VerticalAlignment="Center" Panel.ZIndex="5">
+            <TextBlock TextWrapping="Wrap" x:Name="winnerText" TextAlignment="Center" FontSize="64" Style="{DynamicResource MaterialDesignTitleTextBlock}">
+                WINNER!
+            </TextBlock> 
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.ColumnSpan="6" Padding="10" Margin="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Ellipse
             x:Name="first"
             Width="50"
             Height="50"
             Fill="BlanchedAlmond" Stroke="Black"/>
-        <Ellipse
+                <Ellipse
             x:Name="second"
             Grid.Column="1"
             Grid.ColumnSpan="2"
             Width="50"
             Height="50"
             Fill="BlanchedAlmond" Stroke="Black"/>
-        <Ellipse
+                <Ellipse
             x:Name="third"
             Grid.Column="3"
             Grid.ColumnSpan="2"
             Width="50"
             Height="50"
             Fill="BlanchedAlmond" Stroke="Black"/>
-        <Ellipse
+                <Ellipse
             x:Name="fourth"
             Grid.Column="5"
             Width="50"
             Height="50"
             Fill="BlanchedAlmond" Stroke="Black"/>
+            </Grid>
+        </materialDesign:Card>
 
-        <Ellipse
-            Grid.Row="1"
+        <materialDesign:Card Grid.Row="1" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Width="50"
             Height="50"
             Fill="Red" Stroke="Black" MouseLeftButtonUp="selectColour"/>
-        <Ellipse
-            Grid.Row="1"
-            Grid.Column="1"
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1" Grid.Column="1" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Width="50"
             Height="50"
             MouseLeftButtonUp="selectColour"
             Fill="Green" Stroke="Black"/>
-        <Ellipse
-            Grid.Row="1"
-            Grid.Column="2"
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1" Grid.Column="2" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Width="50"
             Height="50"
             MouseLeftButtonUp="selectColour"
             Fill="Blue" Stroke="Black"/>
-        <Ellipse
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1" Grid.Column="3" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Grid.Row="1"
             Grid.Column="3"
             Width="50"
             Height="50"
             MouseLeftButtonUp="selectColour"
             Fill="Yellow" Stroke="Black"/>
-        <Ellipse
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1" Grid.Column="4" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Grid.Row="1"
             Grid.Column="4"
             Width="50"
             Height="50"
             MouseLeftButtonUp="selectColour"
             Fill="Pink" Stroke="Black"/>
-        <Ellipse
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="1" Grid.Column="5" Padding="5" Margin="10" VerticalAlignment="Center">
+            <Ellipse
             Grid.Row="1"
             Grid.Column="5"
             Width="50"
             Height="50"
             MouseLeftButtonUp="selectColour"
             Fill="Purple" Stroke="Black"/>
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Row="2" Grid.ColumnSpan="6" Grid.RowSpan="2" Padding="5" Margin="10" VerticalAlignment="Bottom">
+            <StackPanel>
+                <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" x:Name="Results" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
+                <Button x:Name="submit" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Click="testSequence" Margin="15">Submit</Button>
+                <Button x:Name="guessesBtn" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Click="viewGuesses" Margin="15">Guesses</Button>
+            </StackPanel>
+        </materialDesign:Card>
 
-        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" x:Name="Results" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
-        <Button x:Name="submit" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Click="testSequence">Submit</Button>
+        
     </Grid>
 </Window>

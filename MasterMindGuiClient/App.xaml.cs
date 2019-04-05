@@ -20,6 +20,7 @@ namespace MasterMindGUI
         {
             base.OnStartup(e);
             joinWindow = new JoinWindow();
+            joinWindow.Show();
         }
 
         public static new App Current
