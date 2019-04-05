@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ServiceModel;
+using System.Runtime.Serialization;
 
 namespace MasterMindLibrary
 {
     public interface ICallback
     {
         [OperationContract(IsOneWay = true)] void SomeoneWon(CallbackInfo info);
+        [OperationContract(IsOneWay = true)] void SomeoneJoined(Dictionary<string, int> players);
     }
 
     public enum Colors { Red = 0, Green, Blue, Yellow, Pink, Purple }
@@ -17,10 +19,11 @@ namespace MasterMindLibrary
     [ServiceContract(CallbackContract = typeof(ICallback))]
     public interface ICodeMaker
     {
-        [OperationContract] Tuple<bool?, string> IsCorrect(List<Colors> guess, string name);
+        [OperationContract] Tuple<bool?, List<bool?>> IsCorrect(List<Colors> guess, string name);
         List<Colors> correctSequence { [OperationContract] get; [OperationContract] set; }
         [OperationContract] bool ToggleCallbacks();
-        [OperationContract] string HasSomeoneWon();
+        [OperationContract] string HasSomeoneWon(string name);
+        Dictionary<string, int> playerNames { [OperationContract] get; [OperationContract] set; }
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
@@ -30,9 +33,11 @@ namespace MasterMindLibrary
         public List<Colors> correctSequence { get; set; }
         private HashSet<ICallback> callbacks = null;
         const int NUM_COLORS = 4;
+        public Dictionary<string, int> playerNames { get; set; }
         public CodeMaker()
         {
             callbacks = new HashSet<ICallback>();
+            playerNames = new Dictionary<string, int>();
             Random rng = new Random();
             correctSequence = new List<Colors>();
             for (int i = 0; i < NUM_COLORS; i++)
@@ -47,48 +52,60 @@ namespace MasterMindLibrary
             }
         }
 
-        public string HasSomeoneWon()
+        public string HasSomeoneWon(string name)
         {
-            return someoneWon;
+            if (playerNames.ContainsKey(name) || name == "exists")
+            {
+                return "exists";
+            }
+            else
+            {
+                playerNames.Add(name, 0);
+                updatePlayerList();
+                return someoneWon;
+            }
         }
 
-        public Tuple<bool?, string> IsCorrect(List<Colors> guess, string name)
+        public Tuple<bool?, List<bool?>> IsCorrect(List<Colors> guess, string name)
         {
-            Tuple<bool?, string> returnValues;
+            Tuple<bool?, List<bool?>> returnValues;
+            List<bool?> hints = new List<bool?>();
             try
             {
                 if (someoneWon == "")
                 {
-                    string help = "";
+                    
                     bool correct = true;
 
-                    for(int i = 0; i < guess.Count; i++)
+                    for (int i = 0; i < guess.Count; i++)
                     {
-                        if(guess[i] != correctSequence[i])
+                        if (guess[i] != correctSequence[i])
                         {
                             correct = false;
                             if (correctSequence.Contains(guess[i]))
                             {
-                                help += String.Format("The sequence contains {0} but it is in the incorrect positon\n", guess[i]);
+                                hints.Add(false);
                             }
                             else
                             {
-                                help += String.Format("The sequence does not contain {0}\n", guess[i]);
+                                hints.Add(null);
                             }
                         }
                         else
                         {
-                            help += String.Format("The sequence contains {0} and it is in the correct positon\n", guess[i]);
+                            hints.Add(true);
                         }
                     }
-                    
+
 
                     if (correct)
                     {
                         someoneWon = name;
                         updateAllClients(name);
                     }
-                    returnValues = new Tuple<bool?, string>(correct, help);
+                    this.playerNames[name] += 1;
+                    updatePlayerList();
+                    returnValues = new Tuple<bool?, List<bool?>>(correct, hints);
                     return returnValues;
                 }
                 else
@@ -118,6 +135,12 @@ namespace MasterMindLibrary
                 callbacks.Add(cb);
                 return true;
             }
+        }
+
+        private void updatePlayerList()
+        {
+            foreach (ICallback cb in callbacks)
+                cb.SomeoneJoined(this.playerNames);
         }
 
         private void updateAllClients(string name, bool someoneWon = false)

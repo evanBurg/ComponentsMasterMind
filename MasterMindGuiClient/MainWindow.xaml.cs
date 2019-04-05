@@ -9,6 +9,7 @@ using MasterMindLibrary;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using MasterMindGuiClient;
+using System.Windows.Controls;
 
 namespace MasterMindGUI
 {
@@ -44,20 +45,15 @@ namespace MasterMindGUI
                 codeMaker = channel.CreateChannel();
                 this.submit.IsEnabled = false;
 
-               
-
                 try
                 {
-                    HasSomeoneWon();
-                    // Subscribe to the callbacks
-                    callbacksEnabled = codeMaker.ToggleCallbacks();
                     connected = true;
+                    callbacksEnabled = codeMaker.ToggleCallbacks();
+                    HasSomeoneWon();
                 }
                 catch (Exception)
                 {
                     MessageBox.Show(String.Format("There was an issue connecting to '{0}'. Please check the entered address as well as your network status and try again", ip));
-                    App.Current.joinWindow = new JoinWindow();
-                    App.Current.joinWindow.Show();
                 }
 
                 if (connected)
@@ -77,6 +73,8 @@ namespace MasterMindGUI
                 }
                 else
                 {
+                    App.Current.joinWindow = new JoinWindow();
+                    App.Current.joinWindow.Show();
                     this.Close();
                 }
             }
@@ -88,8 +86,13 @@ namespace MasterMindGUI
 
         private void HasSomeoneWon()
         {
-            string name = codeMaker.HasSomeoneWon();
-            if (name != "")
+            string name = codeMaker.HasSomeoneWon(this.name);
+            if (name == "exists")
+            {
+                connected = false;
+                MessageBox.Show(String.Format("Someone has already joined the server with the name '{0}'", this.name));
+            }
+            else if (name != "")
             {
                 finished = true;
                 codeMaker.IsCorrect(selected, name);
@@ -97,6 +100,7 @@ namespace MasterMindGUI
         }
 
         private delegate void ClientUpdateDelegate(CallbackInfo info);
+        private delegate void ClientUserDelegate(Dictionary<string, int> info);
 
         public void SomeoneWon(CallbackInfo info)
         {
@@ -107,12 +111,14 @@ namespace MasterMindGUI
                     // Update the GUI
                     MessageBox.Show("A user won: " + info.name);
                     this.window.Title += " | FINISHED";
-                    if(info.name == this.name)
+                    if (info.name == this.name)
                     {
                         winnerCard.Visibility = Visibility.Visible;
                         SolidColorBrush green = new SolidColorBrush(System.Windows.Media.Colors.Green);
                         winnerText.Foreground = green;
                         winnerText.Text = "WINNER!";
+
+                        this.finished = true;
                     }
                     else
                     {
@@ -120,11 +126,13 @@ namespace MasterMindGUI
                         SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
                         winnerText.Foreground = red;
                         winnerText.Text = "LOSER!";
+
+                        this.finished = true;
                     }
                 }
                 else
                 {
-                    this.window.Title += " | FINISHED"; 
+                    this.window.Title += " | FINISHED";
                     MessageBox.Show("A user has already won: " + info.name);
                 }
                 this.submit.IsEnabled = false;
@@ -209,32 +217,124 @@ namespace MasterMindGUI
             }
         }
 
+        private void showLastGuess(List<MasterMindLibrary.Colors> guess, List<bool?> hints)
+        {
+            Grid grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+
+            for (int i = 0; i < guess.Count; i++)
+            {
+                Ellipse ellipse = new Ellipse();
+                ellipse.Height = 15;
+                ellipse.Width = 15;
+                ellipse.Fill = solidColors[guess[i]];
+                ellipse.Stroke = new SolidColorBrush(System.Windows.Media.Colors.Black);
+                ellipse.Margin = new Thickness(2);
+                Grid.SetColumn(ellipse, i);
+                Grid.SetRowSpan(ellipse, 4);
+                grid.Children.Add(ellipse);
+            }
+
+            for (int i = 0; i < hints.Count; i++)
+            {
+                Ellipse ellipse = new Ellipse();
+                ellipse.Height = 8;
+                ellipse.Width = 8;
+                ellipse.Stroke = new SolidColorBrush(System.Windows.Media.Colors.Black);
+                ellipse.StrokeThickness = 1;
+                ellipse.Margin = new Thickness(2);
+
+                if (hints[i] == true)
+                {
+                    ellipse.Fill = new SolidColorBrush(System.Windows.Media.Colors.Red);
+                }
+                else if (hints[i] == false)
+                {
+                    ellipse.Fill = new SolidColorBrush(System.Windows.Media.Colors.BlanchedAlmond);
+                }
+                else if (hints[i] == null)
+                {
+                    continue;
+                }
+
+                switch (i)
+                {
+                    case 0:
+                        Grid.SetColumn(ellipse, 4);
+                        Grid.SetRow(ellipse, 0);
+                        break;
+                    case 1:
+                        Grid.SetColumn(ellipse, 5);
+                        Grid.SetRow(ellipse, 0);
+                        break;
+                    case 2:
+                        Grid.SetColumn(ellipse, 4);
+                        Grid.SetRow(ellipse, 1);
+                        break;
+                    case 3:
+                        Grid.SetColumn(ellipse, 5);
+                        Grid.SetRow(ellipse, 1);
+                        break;
+                }
+                grid.Children.Add(ellipse);
+            }
+
+
+            this.guessContainer.Children.Clear();
+            this.guessContainer.Children.Add(grid);
+        }
+
         private void testSequence(object sender, RoutedEventArgs e)
         {
-            if (guesses.Count + 1 <= 8 && selected.Count == 4)
+            try
             {
-                Tuple<bool?, string> results = codeMaker.IsCorrect(selected, name);
-                if (results.Item1 == false)
+                if (guesses.Count + 1 <= 8 && selected.Count == 4)
                 {
-                    guesses.Add(selected);
-                    Results.Text = String.Format("That sequence is incorrect!\nYou've made {0}/8 guesses.", guesses.Count);
-                    selected = new List<MasterMindLibrary.Colors>();
-                    this.submit.IsEnabled = false;
-                    MessageBox.Show(results.Item2);
-                    updateColours();
-                    if (guesses.Count == 8)
+                    Tuple<bool?, List<bool?>> results = codeMaker.IsCorrect(selected, name);
+                    if (results.Item1 == false)
                     {
-                        winnerCard.Visibility = Visibility.Visible;
-                        SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
-                        winnerText.Foreground = red;
-                        winnerText.Text = "LOSER!";
+                        guesses.Add(selected);
+                        Results.Text = String.Format("That sequence is incorrect!\nYou've made {0}/8 guesses.", guesses.Count);
+                        showLastGuess(selected, results.Item2);
+                        this.submit.IsEnabled = false;
+                        if (guesses.Count == 8)
+                        {
+                            winnerCard.Visibility = Visibility.Visible;
+                            SolidColorBrush red = new SolidColorBrush(System.Windows.Media.Colors.Red);
+                            winnerText.Foreground = red;
+                            winnerText.Text = "LOSER!";
+                            this.finished = true;
+                        }
+                        else
+                        {
+                            selected = new List<MasterMindLibrary.Colors>();
+                            updateColours();
+                        }
+                    }
+                    else if (results.Item1 == true)
+                    {
+                        guesses.Add(selected);
+                        showLastGuess(selected, results.Item2);
+                        Results.Text = String.Format("That sequence is correct!\nYou guessed {0} time(s) before finding the sequence.", guesses.Count);
                     }
                 }
-                else if (results.Item1 == true)
-                {
-                    guesses.Add(selected);
-                    Results.Text = String.Format("That sequence is correct!\nYou guessed {0} time(s) before finding the sequence.", guesses.Count);
-                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("There was an issue talking to the server, you have been disconnected. Please try connecting again.");
+                App.Current.joinWindow = new JoinWindow();
+                App.Current.joinWindow.Show();
+                App.Current.mainWindow.Close();
             }
         }
 
@@ -242,6 +342,38 @@ namespace MasterMindGUI
         {
             GuessesWindow window = new GuessesWindow(this.guesses, this.solidColors);
             window.ShowDialog();
+        }
+
+        public void SomeoneJoined(Dictionary<string, int> players)
+        {
+            if (System.Threading.Thread.CurrentThread == this.Dispatcher.Thread)
+            {
+                this.playerListStack.Children.Clear();
+                foreach (KeyValuePair<string, int> entry in players)
+                {
+                    string name = entry.Key;
+                    int guesses = entry.Value;
+
+                    TextBlock user = new TextBlock();
+                    user.FontSize = 14;
+                    user.Text = name + " [" + guesses + "]";
+                    this.playerListStack.Children.Add(user);
+                }
+            }
+            else
+            {
+                // Only the main (dispatcher) thread can change the GUI
+                this.Dispatcher.BeginInvoke(new ClientUserDelegate(SomeoneJoined), players);
+            }
+        }
+
+        private void deselect(object sender, RoutedEventArgs e)
+        {
+            if (selected.Count > 0 && !this.finished)
+            {
+                this.selected.RemoveAt(selected.Count - 1);
+                updateColours();
+            }
         }
     }
 }

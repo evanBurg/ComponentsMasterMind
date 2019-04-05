@@ -10,7 +10,7 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
-        Title="Mastermind" Height="434.308" Width="525" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+        Title="Mastermind" Height="434.308" Width="716.509" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -25,7 +25,25 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+
+        <materialDesign:Card Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Padding="10" Margin="10" VerticalAlignment="Top" Panel.ZIndex="5">
+            <StackPanel>
+                <TextBlock FontSize="24" TextAlignment="Center">Last Guess</TextBlock>
+                <StackPanel x:Name="guessContainer"></StackPanel>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <materialDesign:Card x:Name="playerList" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2" Grid.RowSpan="3" Padding="10" Margin="10" VerticalAlignment="Top" Panel.ZIndex="5">
+            <StackPanel>
+                <TextBlock FontSize="24">Players</TextBlock>
+                <Border BorderThickness="1" BorderBrush="Gray"></Border>
+                <StackPanel x:Name="playerListStack" Margin="10">
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:Card>
 
         <materialDesign:Card x:Name="winnerCard" Visibility="Hidden" Grid.ColumnSpan="6" Grid.RowSpan="4" Padding="10" Margin="10" VerticalAlignment="Center" Panel.ZIndex="5">
             <TextBlock TextWrapping="Wrap" x:Name="winnerText" TextAlignment="Center" FontSize="64" Style="{DynamicResource MaterialDesignTitleTextBlock}">
@@ -121,7 +139,15 @@
         <materialDesign:Card Grid.Row="2" Grid.ColumnSpan="6" Grid.RowSpan="2" Padding="5" Margin="10" VerticalAlignment="Bottom">
             <StackPanel>
                 <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" x:Name="Results" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap"></TextBlock>
-                <Button x:Name="submit" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Click="testSequence" Margin="15">Submit</Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="submit" Grid.Row="3" Grid.Column="0" Click="testSequence" Margin="15">Submit</Button>
+                    <Button  x:Name="backspace" Grid.Row="3" Grid.Column="1" Click="deselect" Margin="15">Backspace</Button>
+                </Grid>
+                
                 <Button x:Name="guessesBtn" Grid.Row="3" Grid.Column="4" Grid.ColumnSpan="2" Click="viewGuesses" Margin="15">Guesses</Button>
             </StackPanel>
         </materialDesign:Card>

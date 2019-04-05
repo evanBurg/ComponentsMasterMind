@@ -22,6 +22,9 @@ namespace MasterMindGuiClient
         {
             foreach(List<MasterMindLibrary.Colors> guess in guesses)
             {
+                MaterialDesignThemes.Wpf.Card card = new MaterialDesignThemes.Wpf.Card();
+                card.Padding = new Thickness(5);
+                card.Margin = new Thickness(5);
                 Grid grid = new Grid();
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
@@ -40,7 +43,8 @@ namespace MasterMindGuiClient
                     grid.Children.Add(ellipse);
                 }
 
-                this.container.Children.Add(grid);
+                card.Content = grid;
+                this.container.Children.Add(card);
             }
         }
 
